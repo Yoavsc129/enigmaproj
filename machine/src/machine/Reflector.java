@@ -15,10 +15,9 @@ public class Reflector {
 
 
     }
-    private ReflectorID ID;
-    private int[] reflection;
+    private final ReflectorID ID;
+    private final int[] reflection;
 
-    private int size;
 
     public Reflector(ReflectorID id, int size, List<CTEReflect> cteReflects) {
         ID = id;
@@ -26,7 +25,7 @@ public class Reflector {
         for(CTEReflect reflect : cteReflects){
             reflection[reflect.getInput() - 1] = reflect.getOutput() - 1;
             reflection[reflect.getOutput() - 1] = reflect.getInput() - 1;
-        };
+        }
     }
 
     public int reflect(int input){

@@ -2,9 +2,7 @@ package engine;
 
 import engine.exception.*;
 import machine.Machine;
-import machine.Plugs;
 import machine.Reflector;
-import machine.Rotor;
 import machine.generated.*;
 
 import javax.xml.bind.JAXBContext;
@@ -33,7 +31,7 @@ public class Engine {
     private Stats currStats;
 
     private void openNewFile(String fileName) throws FileNotFoundException {
-        InputStream temp = null;
+        InputStream temp;
         try {
             temp = new FileInputStream(fileName);
         }catch (FileNotFoundException e){
@@ -41,7 +39,7 @@ public class Engine {
         }
         inputStream = temp;
     }
-    private void createXMLEnigma() throws RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException {
+    private void createXMLEnigma() throws RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException {
         try {
             CTEEnigma cteEnigma = deserializeForm(inputStream);
             CTEMachine cteMachine = cteEnigma.getCTEMachine();
@@ -55,7 +53,6 @@ public class Engine {
             messagesCount = 0;
         } catch (JAXBException e) {
             throw new RuntimeException(e);
-            //something nicer
         } catch (Exception e){
             throw e;
         }
@@ -68,7 +65,7 @@ public class Engine {
         return (CTEEnigma) u.unmarshal(in);
     }
 
-    private void checkCTEnigma(CTEMachine cteMachine) throws ABCNotEvenException, RotorCountTooLowException, NotEnoughRotorsException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, RotorIdOutOfScopeException {
+    private void checkCTEnigma(CTEMachine cteMachine) throws ABCNotEvenException, RotorCountTooLowException, NotEnoughRotorsException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException {
         if(cteMachine.getABC().trim().length()%2 != 0)
             throw new ABCNotEvenException(cteMachine.getABC().trim().length());
 
@@ -79,6 +76,7 @@ public class Engine {
             throw new NotEnoughRotorsException(cteMachine.getRotorsCount(),cteMachine.getCTERotors().getCTERotor().size());
         try{
             checkCTERotors(cteMachine.getCTERotors().getCTERotor(), cteMachine.getABC().trim().length());
+            checkCTEReflectors(cteMachine.getCTEReflectors().getCTEReflector());
         }catch (Exception e){
             throw e;
         }
@@ -104,9 +102,10 @@ public class Engine {
             if(r.getNotch() < 1 || r.getNotch() > abcLen)
                 throw new NotchOutOfRangeException(id, r.getNotch(), abcLen);
 
+            abcCounterLeft.clear();
+            abcCounterRight.clear();
             for(CTEPositioning p : r.getCTEPositioning()){
-                abcCounterLeft.clear();
-                abcCounterRight.clear();
+
                 right = p.getRight().charAt(0);
                 left = p.getLeft().charAt(0);
                 if(abcCounterLeft.contains(left))
@@ -119,13 +118,32 @@ public class Engine {
         }
     }
 
-    public void createMachineFromFile(String fileName) throws FileNotFoundException, RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException {
+    private void checkCTEReflectors(List<CTEReflector> CTEReflectors) throws BadReflectorIdException, NotUniqueRefIdException, BadReflectException {
+        Reflector.ReflectorID[] ids = Reflector.ReflectorID.values();
+        List<String> idsStrings = new ArrayList<>();
+        String id;
+        for(Reflector.ReflectorID i : ids)
+            idsStrings.add(i.name());
+        idsStrings = idsStrings.subList(0,CTEReflectors.size());
+        Set<String> usedIds = new HashSet<>();
+        for(CTEReflector r : CTEReflectors){
+            id = r.getId();
+            if(!idsStrings.contains(id))
+                throw new BadReflectorIdException(id, idsStrings.get(idsStrings.size() - 1));
+            if(usedIds.contains(r.getId()))
+                throw new NotUniqueRefIdException(id);
+            usedIds.add(id);
+            for(CTEReflect t: r.getCTEReflect())
+                if(t.getInput() == t.getOutput())
+                    throw new BadReflectException(id, t.getInput());
+        }
+    }
+
+    public void createMachineFromFile(String fileName) throws FileNotFoundException, RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException {
         try{
             openNewFile(fileName);
             createXMLEnigma();
-        } catch(FileNotFoundException e){
-            throw e;
-        } catch (Exception e){
+        } catch(Exception e){
             throw e;
         }
     }
@@ -158,12 +176,11 @@ public class Engine {
                     return String.format("The ID %d was chosen at least twice. please enter different IDs.", id);
                 ids.add(id);
             }catch (NumberFormatException e){
-                return String.format("Please only enter numbers.");
+                return "Please only enter numbers.";
             }
 
         }
         Collections.reverse(ids);
-        //enigma.pickRotors(ids);
         enigma.pickTempRotors(ids);
         return null;
     }
@@ -237,7 +254,6 @@ public class Engine {
         for (int i = 0; i < plugsCount; i++)
             plugs.append(ABC.charAt(abcIndexes.get(i)));
 
-        //enigma.reinitializeMachine();
         enigma.pickTempRotors(rotorIds.subList(0,enigma.getRotorsCount()));
         enigma.setInitialTempRotorsPosition(pos.toString());
         pickReflector(reflectorID);
@@ -298,7 +314,7 @@ public class Engine {
                 first = false;
             }
             else{
-                res.append("\n" + s.getSpecs());
+                res.append("\n").append(s.getSpecs());
                 res.append(s.getMessages());
             }
         }
