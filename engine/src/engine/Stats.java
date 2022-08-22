@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Stats {
-    private String specs;
+    private final String specs;
 
 
 
-    private List<Msg> messages;
+    private final List<Msg> messages;
 
     public Stats(String specs) {
         this.specs = specs;
@@ -21,14 +21,8 @@ public class Stats {
 
     public String getMessages(){
         StringBuilder res = new StringBuilder();
-        boolean first = true;
         for(Msg m : messages){
-            /*if(first){
-                res.append(m.getMessage());
-                first = false;
-            }
-            else res.append("\n" + m.getMessage());*/
-            res.append("\n" + m.getMessage());
+            res.append("\n").append(m.getMessage());
         }
         return res.toString();
     }

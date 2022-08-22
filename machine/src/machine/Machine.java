@@ -5,12 +5,12 @@ import machine.generated.CTERotor;
 import java.util.*;
 
 public class Machine {
-    private int rotorsCount;
-    private String ABC;
+    private final int rotorsCount;
+    private final String ABC;
 
-    private Map<Integer, Rotor> allRotors;
+    private final Map<Integer, Rotor> allRotors;
     private List<Rotor> usedRotors;
-    private Map<machine.Reflector.ReflectorID, Reflector> reflectors;
+    private final Map<machine.Reflector.ReflectorID, Reflector> reflectors;
     private Reflector usedReflector;
     private Plugs plugs;
 
@@ -36,10 +36,7 @@ public class Machine {
         usedRotors.add(new Rotor());
         plugs = new Plugs(ABC);
     }
-    public void pickRotors(List<Integer> rotorsIDs){
-        for(int id : rotorsIDs)
-            usedRotors.add(allRotors.get(id).clone());
-    }
+
 
     public void pickTempRotors(List<Integer> rotorsIDs){
         tempRotors = new ArrayList<>();
@@ -49,21 +46,8 @@ public class Machine {
 
     }
 
-    public void pickReflector(String ID){
-        usedReflector = reflectors.get(Reflector.ReflectorID.valueOf(ID));
-    }
-
     public void pickTempReflector(String ID){tempReflector = reflectors.get(Reflector.ReflectorID.valueOf(ID));}
 
-    public void setInitialRotorsPosition(String positions){
-        int i = 0;
-        for(Rotor rotor : usedRotors){
-            if(rotor.getId() > 0){
-                rotor.setInitialPosition(positions.charAt(i));
-                i++;
-            }
-        }
-    }
 
     public void setInitialTempRotorsPosition(String positions){
         int i = 0;
@@ -78,9 +62,7 @@ public class Machine {
     public void setupTempPlugs(){tempPlugs = new Plugs(ABC);}
 
     public void setTempPlugs(char c1, char c2){tempPlugs.setPlugs(c1, c2);}
-    public void setPlugs(char c1, char c2){
-        plugs.setPlugs(c1, c2);
-    }
+
 
     public char getPlugs(char c){
         return plugs.getPlug(c);
@@ -156,9 +138,4 @@ public class Machine {
                 r.resetRotor();
     }
 
-    public void reinitializeMachine(){
-        usedRotors = new ArrayList<>();
-        usedRotors.add(new Rotor());
-        plugs = new Plugs(ABC);
-    }
 }

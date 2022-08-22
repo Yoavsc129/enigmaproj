@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Rotor implements Cloneable{
-    private int id;
+    private final int id;
     private int notch;
 
-    private int ABClen;
+    private final int ABClen;
 
     private char initialLetter;
 
@@ -44,9 +44,7 @@ public class Rotor implements Cloneable{
         try{
             Rotor newRotor = (Rotor) super.clone();
             newRotor.leftCol = new HashMap<>(leftCol);
-            //newRotor.leftCol.putAll(leftCol);
             newRotor.rightCol = new HashMap<>(rightCol);
-            //newRotor.leftCol.putAll(rightCol);
             return newRotor;
 
         }catch (CloneNotSupportedException ex) {
@@ -56,7 +54,6 @@ public class Rotor implements Cloneable{
 
     public void rotate(int times){
         int newval;
-        //Duplicate code
         for(Character k : leftCol.keySet()){
             newval = leftCol.get(k) - times;
             if(newval <=0)
@@ -125,7 +122,7 @@ public class Rotor implements Cloneable{
     }
 
     public String createRotorSpecs(){
-        String res = " ";
+        String res;
         res = String.format("%d(%d)", id, notch - 1);
 
 

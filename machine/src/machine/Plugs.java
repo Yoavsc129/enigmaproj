@@ -1,12 +1,10 @@
 package machine;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Plugs {
-    private String ABC;
-    private Map<Character, Character> plugs;
+    private final String ABC;
+    private final Map<Character, Character> plugs;
 
     private Boolean inUse = false;
 
@@ -34,11 +32,7 @@ public class Plugs {
 
     }
     public char getPlug(char c){
-        char res = plugs.get(c);
-        /*if(res == c)
-            return ' ';*/
-        //else
-        return res;
+        return plugs.get(c);
     }
 
     public Boolean getInUse() {
