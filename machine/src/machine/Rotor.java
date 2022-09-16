@@ -1,11 +1,12 @@
 package machine;
 import machine.generated.CTEPositioning;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Rotor implements Cloneable{
+public class Rotor implements Cloneable, Serializable {
     private final int id;
     private int notch;
 

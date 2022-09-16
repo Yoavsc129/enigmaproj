@@ -2,9 +2,10 @@ package machine;
 import machine.generated.CTEReflector;
 import machine.generated.CTERotor;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Machine {
+public class Machine implements Serializable {
     private final int rotorsCount;
     private final String ABC;
 
@@ -19,6 +20,8 @@ public class Machine {
     private Plugs tempPlugs;
 
     private Reflector tempReflector;
+
+    private MachineSpecs machineSpecs = null;
 
     public Machine(int rotorsCount, String abc, List<CTERotor> cteRotor, List<CTEReflector> cteReflector) {
         this.rotorsCount = rotorsCount;
@@ -35,6 +38,8 @@ public class Machine {
 
         usedRotors.add(new Rotor());
         plugs = new Plugs(ABC);
+        tempRotors = usedRotors;
+        tempPlugs = plugs;
     }
 
 
@@ -72,10 +77,22 @@ public class Machine {
         usedRotors = tempRotors;
         usedReflector = tempReflector;
         plugs = tempPlugs;
+
     }
 
     public  char encodeChar(char c){
         return getPlugs(ABC.charAt(encode(ABC.indexOf(getPlugs(c)) + 1) - 1));
+    }
+
+    private char encodeCharNoPlugs(char c){return ABC.charAt(encode(ABC.indexOf(c) + 1) - 1);}
+
+    public String encodeStringNoPlugs(String input){
+        StringBuilder res = new StringBuilder();
+        char[] inputAsArray = input.toCharArray();
+        for(char c: inputAsArray)
+            res.append(encodeCharNoPlugs(c));
+
+        return res.toString();
     }
 
     private int encode(int index){
@@ -108,7 +125,12 @@ public class Machine {
     public int getReflectorsTotal(){
         return reflectors.size();
     }
-    public String createMachineSpecs(){
+
+    public List<Rotor> getUsedRotors() {
+        return usedRotors;
+    }
+
+    public String createFormatMachineSpecs(){
         StringBuilder res = new StringBuilder("<");
         StringBuilder pos = new StringBuilder("<");
         int i = 2;
@@ -132,10 +154,44 @@ public class Machine {
         return res.toString();
     }
 
+
     public void resetRotors(){
         for(Rotor r : usedRotors)
             if(r.getId()>0)
                 r.resetRotor();
     }
 
+    public MachineSpecs createMachineSpecs() {
+        StringBuilder rotors = new StringBuilder();
+        StringBuilder positions = new StringBuilder();
+        String positionsFormat;
+        int i = 2;
+        for(Rotor r : usedRotors){
+            if(r.getId() > 0){
+                rotors.insert(0, r.getId());
+                positionsFormat = String.format("%c(%d)", r.getCurrPosition(), r.getNotch() - 1);
+                //positions.insert(1, r.getCurrPosition());
+                positions.insert(0, positionsFormat);
+                if(i < usedRotors.size()) {
+                    rotors.insert(0, ',');
+                    positions.insert(0, ',');
+                }
+                i++;
+            }
+        }
+        String plugsStr = null;
+        if(plugs.getInUse())
+            plugsStr = plugs.getAllPlugs();
+
+
+        return new MachineSpecs(rotors.toString(), positions.toString(), usedReflector.getID().toString(), plugsStr);
+    }
+
+    public void setMachineSpecs() {
+       machineSpecs = createMachineSpecs();
+    }
+
+    public MachineSpecs getMachineSpecs(){
+        return machineSpecs = createMachineSpecs();
+    }
 }

@@ -1,24 +1,35 @@
 package engine;
 
+import engine.bruteForce.Decipher;
+import engine.bruteForce.Difficulty;
 import engine.exception.*;
 import machine.Machine;
+import machine.MachineSpecs;
 import machine.Reflector;
 import machine.generated.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 public class Engine {
 
     private final static String JAXB_PACKAGE_NAME = "machine.generated";
+
+    public static final String SAVED_ENIGMA_FILE_NAME = "savedEnigma.dat";
     private InputStream inputStream;
 
     private Machine enigma;
+
+    private Decipher decipher;
+
+    public MachineDetails getDetails() {
+        return details;
+    }
+
+    private MachineDetails details;
 
     private boolean machineLoaded = false;
 
@@ -29,6 +40,20 @@ public class Engine {
     private List<Stats> stats;
 
     private Stats currStats;
+
+    public MachineSpecs getInitialMachineSpecs() {
+        return initialMachineSpecs;
+    }
+
+    public MachineSpecs getCurrMachineSpecs() {
+        return currMachineSpecs = enigma.getMachineSpecs();
+    }
+
+    private MachineSpecs initialMachineSpecs;
+
+    private MachineSpecs currMachineSpecs;
+
+    private String savedMachine;
 
     private void openNewFile(String fileName) throws FileNotFoundException {
         InputStream temp;
@@ -43,14 +68,20 @@ public class Engine {
         try {
             CTEEnigma cteEnigma = deserializeForm(inputStream);
             CTEMachine cteMachine = cteEnigma.getCTEMachine();
+            CTEDecipher cteDecipher = cteEnigma.getCTEDecipher();
             checkCTEnigma(cteMachine);
             enigma = new Machine(cteMachine.getRotorsCount(), cteMachine.getABC().trim(),
                     cteMachine.getCTERotors().getCTERotor(),
                     cteMachine.getCTEReflectors().getCTEReflector());
+            decipher = new Decipher(cteDecipher.getAgents(), cteDecipher.getCTEDictionary().getWords(),
+                    cteDecipher.getCTEDictionary().getExcludeChars());
             machineLoaded = true;
             stats = new ArrayList<>();
             initialSpecs = null;
             messagesCount = 0;
+            details = new MachineDetails(enigma.getRotorsCount(), enigma.getRotorsTotal(),
+                    enigma.getReflectorsTotal(), messagesCount);
+
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         } catch (Exception e){
@@ -58,6 +89,7 @@ public class Engine {
         }
 
     }
+
 
     private static CTEEnigma deserializeForm(InputStream in) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_PACKAGE_NAME);
@@ -150,6 +182,11 @@ public class Engine {
 
     public int getReflectorsTotal(){return enigma.getReflectorsTotal();}
 
+    public int getRotorsCount(){return enigma.getRotorsCount();}
+
+    public int getRotorsTotal(){return enigma.getRotorsTotal();}
+    public int getMessagesCount(){return messagesCount;}
+
     public String getMachineSpecs(){
         StringBuilder res = new StringBuilder();
         res.append(String.format("used rotors/total rotors: %d/%d \ntotal reflectors: %d\nmessages: %d",
@@ -157,10 +194,12 @@ public class Engine {
                 enigma.getReflectorsTotal(), messagesCount));
         if(initialSpecs != null){
             res.append(String.format("\n%s\n", initialSpecs));
-            res.append(enigma.createMachineSpecs());
+            res.append(enigma.createFormatMachineSpecs());
         }
         return res.toString();
     }
+
+
     public String pickRotors(String rotorIds){
         String[] idsString = rotorIds.split(",");
         List<Integer> ids = new ArrayList<>();
@@ -232,6 +271,10 @@ public class Engine {
 
     public void applyChanges(){
         enigma.applyChanges();
+        enigma.setMachineSpecs();
+        initialMachineSpecs = new MachineSpecs(enigma.getMachineSpecs());
+        currMachineSpecs = enigma.getMachineSpecs();
+        createStat();
     }
     public void randMachineSpecs(){
         Random rng = new Random();
@@ -258,16 +301,26 @@ public class Engine {
         enigma.setInitialTempRotorsPosition(pos.toString());
         pickReflector(reflectorID);
         pickPlugs(plugs.toString());
-        enigma.applyChanges();
+        applyChanges();
+        enigma.setMachineSpecs();
+        initialMachineSpecs = new MachineSpecs(enigma.getMachineSpecs());
+        currMachineSpecs = enigma.getMachineSpecs();
 
-        initialSpecs = enigma.createMachineSpecs();
-        createStat();
+        initialSpecs = enigma.createFormatMachineSpecs();
 
+    }
+
+    public void writeMachineToString() throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bytes);
+        out.writeObject(enigma);
+        out.close();
+        decipher.setSavedEnigma(Base64.getEncoder().encodeToString(bytes.toByteArray()));
     }
 
 
     public void setInitialSpecs(){
-        initialSpecs = enigma.createMachineSpecs();
+        initialSpecs = enigma.createFormatMachineSpecs();
     }
 
     public String getInitialSpecs(){return initialSpecs;}
@@ -289,6 +342,7 @@ public class Engine {
         return null;
     }
     public String decodeMsg(String msg){
+        msg = msg.toUpperCase();
         StringBuilder res = new StringBuilder();
         String check = checkAbc(msg);
         if(check != null)
@@ -303,6 +357,21 @@ public class Engine {
 
         return res.toString();
     }
+
+    public String decodeMsgBT(String msg){
+        return enigma.encodeStringNoPlugs(msg.toUpperCase());
+    }
+
+    public void bruteForce(String userInput, Difficulty difficulty) throws IOException, ClassNotFoundException, InterruptedException {
+        writeMachineToString();
+        decipher.bruteForce(userInput, difficulty);
+    }
+
+    public void setMissionScope(int scope){
+        decipher.setMissionScope(scope);
+    }
+
+    public char decodeChar(char c){return enigma.encodeChar(c);}
 
     public String getStats(){
         StringBuilder res = new StringBuilder();
@@ -321,7 +390,30 @@ public class Engine {
         return res.toString();
     }
 
+    public Msg getLastMsg(){
+        return currStats.getLastMsg();
+    }
+
     public boolean isMachineLoaded() {
         return machineLoaded;
+    }
+
+    public String getABC(){return enigma.getABC();}
+
+    public boolean inDictionary(String word){
+        return decipher.inDictionary(word);
+    }
+
+    public int getAgentsCount() {
+        return decipher.getAgentsCount();
+    }
+
+    public List<String> getWordsList(){
+        return decipher.getWordsList();
+    }
+
+    public List<String> dictionarySuggest(String prefix) {
+        List<String> list = decipher.dictionarySuggest(prefix);
+        return list;
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -111,19 +112,28 @@
             </GridPane>
             <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
                <children>
-                  <Label text="Used/Total Rotors" />
+                  <Label text="Used/Total Rotors:">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin></Label>
                   <Text fx:id="usedTotalT" strokeType="OUTSIDE" strokeWidth="0.0" />
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
                <children>
-                  <Label text="Messeges processed" />
+                  <Label text="Messeges processed">
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding></Label>
                   <Text fx:id="msgT" strokeType="OUTSIDE" strokeWidth="0.0" />
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <Label text="Total Reflectors" />
+                  <Label text="Total Reflectors">
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding></Label>
                   <Text fx:id="totalReflectorT" strokeType="OUTSIDE" strokeWidth="0.0" />
                </children>
             </HBox>

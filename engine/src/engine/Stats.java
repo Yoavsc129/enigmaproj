@@ -27,6 +27,10 @@ public class Stats {
         return res.toString();
     }
 
+    public Msg getLastMsg(){
+        return messages.get(messages.size() - 1);
+    }
+
 
     public String getSpecs() {
         return specs;

@@ -1,8 +1,9 @@
 package machine;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Plugs {
+public class Plugs implements Serializable {
     private final String ABC;
     private final Map<Character, Character> plugs;
 
@@ -60,6 +61,24 @@ public class Plugs {
         }
         res.append('>');
 
+        return res.toString();
+    }
+
+    public String getAllPlugs(){
+        StringBuilder res = new StringBuilder();
+        Map<Character, Boolean> usedChars = new HashMap<>();
+        char temp;
+        for(char c : ABC.toCharArray()){
+            usedChars.put(c, false);
+        }
+        for(char key : plugs.keySet()){
+            temp = plugs.get(key);
+            if(temp != key)
+                if(!usedChars.get(temp)){
+                    usedChars.put(key, true);
+                    res.append(key).append(temp);
+                }
+        }
         return res.toString();
     }
 }

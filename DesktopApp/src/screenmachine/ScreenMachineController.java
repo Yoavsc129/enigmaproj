@@ -2,6 +2,7 @@ package screenmachine;
 
 
 import engine.Engine;
+import engine.MachineDetails;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,6 +16,8 @@ import javafx.stage.Window;
 import java.io.File;
 
 public class ScreenMachineController {
+
+
 
     private final static String FILE_NAME_SUFFIX = ".xml";
     @FXML
@@ -104,7 +107,10 @@ public class ScreenMachineController {
     }
 
     private void updateMachineDetails() {
-
+        MachineDetails details = engine.getDetails();
+        usedTotalT.setText(String.format("%d/%d", details.getUsedRotors(), details.getTotalRotors()));
+        totalReflectorT.setText(String.valueOf(details.getTotalReflectors()));
+        msgT.setText(String.valueOf(details.getMessages()));
     }
 
     @FXML
