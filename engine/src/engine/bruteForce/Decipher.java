@@ -1,7 +1,6 @@
 package engine.bruteForce;
 
-import engine.bruteForce.tasks.ProduceDecryptionTasks;
-import engine.bruteForce.tasks.TestingClass;
+
 import javafx.concurrent.Task;
 import machine.Machine;
 
@@ -9,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Decipher {
 
@@ -25,6 +23,10 @@ public class Decipher {
     private String userInput;
 
     private int missionScope = 1;
+
+
+
+
 
 
 
@@ -68,18 +70,6 @@ public class Decipher {
         in.close();
         return res;
     }
-    public void bruteForce(String userInput, Difficulty difficulty) throws IOException, ClassNotFoundException, InterruptedException {
-        BlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(1000);
-        //CustomThreadPoolExecutor threadPool = new CustomThreadPoolExecutor(2, agentsCount, 5, TimeUnit.SECONDS, blockingQueue);
-        Task<Boolean> task = new ProduceDecryptionTasks(savedEnigma, blockingQueue, difficulty, enigma.getABC(), userInput, missionScope, bfDictionary);
-        Thread t = new Thread(new TestingClass(savedEnigma, blockingQueue, difficulty, enigma.getABC(), userInput, missionScope, bfDictionary, agentsCount));
-        new Thread(task).start();
-        //threadPool.prestartAllCoreThreads();
-        t.start();
-        /*threadPool.shutdown();
-        threadPool.awaitTermination(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);*/
-
-    }
 
     public void setMissionScope(int missionScope) {
         this.missionScope = missionScope;
@@ -107,5 +97,11 @@ public class Decipher {
         return list;
     }
 
+    public String getSavedEnigma() {
+        return savedEnigma;
+    }
 
+    public BFDictionary getBfDictionary() {
+        return bfDictionary;
+    }
 }

@@ -29,7 +29,7 @@ public class MainWindow extends Application {
         Engine engine = new Engine();
         mainWindowController.setEngine(engine);
 
-        Scene scene = new Scene(load, 900, 800);
+        Scene scene = new Scene(load, 1038, 844);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

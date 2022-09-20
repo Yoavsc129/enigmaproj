@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox prefHeight="558.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainWindow.tabs.machineTab.MachineTabController">
+<VBox prefHeight="558.0" prefWidth="876.0" styleClass="v-box" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainWindow.tabs.machineTab.MachineTabController">
    <children>
       <HBox prefHeight="235.0" prefWidth="1035.0" VBox.vgrow="ALWAYS">
          <children>
@@ -73,7 +72,10 @@
                         <ComboBox fx:id="reflectorCB" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Button fx:id="setCodeBtn" mnemonicParsing="false" onAction="#setCodeAction" text="Set Code" GridPane.columnIndex="4" GridPane.rowIndex="4" />
                         <Button fx:id="randomCodeBtn" mnemonicParsing="false" onAction="#randomCodeAction" text="Random" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                        <Label fx:id="configError" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+                        <Label fx:id="configError" styleClass="label-error" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+                        <Label text="ex: 1,2,3" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="ex: aaa" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <Label text="ex: 'abcd' for a|b, c|d" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="3" />
                      </children>
                      <VBox.margin>
                         <Insets />

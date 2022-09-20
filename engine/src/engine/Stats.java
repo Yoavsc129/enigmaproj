@@ -35,4 +35,13 @@ public class Stats {
     public String getSpecs() {
         return specs;
     }
+
+    public void updateLastMsg(String input, String output, long time){
+        Msg res = getLastMsg();
+        res.updateMessage(input, output, time);
+    }
+
+    public void discardLastMsg() {
+        messages.remove(messages.size() - 1);
+    }
 }

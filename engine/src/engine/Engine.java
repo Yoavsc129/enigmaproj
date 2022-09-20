@@ -55,6 +55,8 @@ public class Engine {
 
     private String savedMachine;
 
+    private boolean newDisMsg = true;
+
     private void openNewFile(String fileName) throws FileNotFoundException {
         InputStream temp;
         try {
@@ -64,11 +66,13 @@ public class Engine {
         }
         inputStream = temp;
     }
-    private void createXMLEnigma() throws RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException {
+    private void createXMLEnigma() throws RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException, AgentCountOutOfRangeException {
         try {
             CTEEnigma cteEnigma = deserializeForm(inputStream);
             CTEMachine cteMachine = cteEnigma.getCTEMachine();
             CTEDecipher cteDecipher = cteEnigma.getCTEDecipher();
+            if(cteDecipher.getAgents() < 2 || cteDecipher.getAgents() > 50)
+                throw new AgentCountOutOfRangeException(cteDecipher.getAgents());
             checkCTEnigma(cteMachine);
             enigma = new Machine(cteMachine.getRotorsCount(), cteMachine.getABC().trim(),
                     cteMachine.getCTERotors().getCTERotor(),
@@ -171,7 +175,8 @@ public class Engine {
         }
     }
 
-    public void createMachineFromFile(String fileName) throws FileNotFoundException, RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException {
+
+    public void createMachineFromFile(String fileName) throws FileNotFoundException, RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException, AgentCountOutOfRangeException {
         try{
             openNewFile(fileName);
             createXMLEnigma();
@@ -358,20 +363,24 @@ public class Engine {
         return res.toString();
     }
 
+    public char decodeChar(char c){
+        long start = System.nanoTime();
+        String res = String.format("%c",enigma.encodeChar(c));
+        long end = System.nanoTime();
+        if(newDisMsg) {
+            currStats.addMessage(String.format("%c", c), res, end - start);
+            newDisMsg = false;
+        }
+        else{
+            currStats.updateLastMsg(String.format("%c", c), res, end - start);
+        }
+
+        return res.charAt(0);
+    }
+
     public String decodeMsgBT(String msg){
         return enigma.encodeStringNoPlugs(msg.toUpperCase());
     }
-
-    public void bruteForce(String userInput, Difficulty difficulty) throws IOException, ClassNotFoundException, InterruptedException {
-        writeMachineToString();
-        decipher.bruteForce(userInput, difficulty);
-    }
-
-    public void setMissionScope(int scope){
-        decipher.setMissionScope(scope);
-    }
-
-    public char decodeChar(char c){return enigma.encodeChar(c);}
 
     public String getStats(){
         StringBuilder res = new StringBuilder();
@@ -394,6 +403,11 @@ public class Engine {
         return currStats.getLastMsg();
     }
 
+    public void discardLastMsg(){
+        currStats.discardLastMsg();
+    }
+
+
     public boolean isMachineLoaded() {
         return machineLoaded;
     }
@@ -415,5 +429,13 @@ public class Engine {
     public List<String> dictionarySuggest(String prefix) {
         List<String> list = decipher.dictionarySuggest(prefix);
         return list;
+    }
+
+    public Decipher getDecipher() {
+        return decipher;
+    }
+
+    public void discreteMsgDone(){
+        newDisMsg = true;
     }
 }

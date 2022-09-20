@@ -3,27 +3,32 @@ package mainWindow.tabs.bruteTab;
 import engine.Engine;
 import engine.bruteForce.Difficulty;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringExpression;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mainWindow.MainWindowController;
+import mainWindow.tabs.bruteTab.subComp.agentResults.AgentResultsController;
 import mainWindow.tabs.bruteTab.subComp.DictionaryController;
+import mainWindow.tabs.bruteTab.subComp.UIAdapter;
+import mainWindow.tasks.BusinessLogic;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class BruteTabController {
 
@@ -67,6 +72,9 @@ public class BruteTabController {
     private ProgressBar taskProgressBar;
 
     @FXML
+    private Label averageTimeLbl;
+
+    @FXML
     private FlowPane resultsFP;
 
     MainWindowController mainController;
@@ -74,6 +82,10 @@ public class BruteTabController {
     DictionaryController dictionaryController;
 
     private Engine engine;
+
+    private BusinessLogic businessLogic;
+
+    private Map<String, AgentResultsController> agentControllers;
 
     private SimpleStringProperty currConfig;
 
@@ -85,12 +97,16 @@ public class BruteTabController {
 
     private SimpleBooleanProperty isPaused;
 
+    private SimpleFloatProperty averageTime;
+
+
     public BruteTabController() {
         currConfig = new SimpleStringProperty("");
         output = new SimpleStringProperty("");
         isInputGiven = new SimpleBooleanProperty(false);
         inProgress = new SimpleBooleanProperty(false);
         isPaused = new SimpleBooleanProperty(false);
+        averageTime = new SimpleFloatProperty(0);
     }
 
     @FXML
@@ -98,12 +114,14 @@ public class BruteTabController {
         currConfigLbl.textProperty().bind(currConfig);
         outputLbl.textProperty().bind(output);
         dmOpBoard.disableProperty().bind(isInputGiven.not());
-        pauseBtn.disableProperty().bind(Bindings.and(inProgress.not(), isPaused));
+        pauseBtn.disableProperty().bind(Bindings.or(inProgress.not(), isPaused));
         stopBtn.disableProperty().bind(inProgress.not());
         startBtn.disableProperty().bind(Bindings.and(inProgress, isPaused.not()));
+        averageTimeLbl.textProperty().bind(Bindings.format("%f ms", averageTime));
     }
 
     public void setup(){
+        businessLogic.setDecipher(engine.getDecipher());
         agentSlider.setMax(engine.getAgentsCount());
         agentsCountLbl.textProperty().bind(Bindings.format("%.0f", agentSlider.valueProperty()));
         difficultyCB.getItems().setAll(Difficulty.values());
@@ -131,10 +149,7 @@ public class BruteTabController {
 
     }
 
-    @FXML
-    void pauseBtnAction(ActionEvent event) {
 
-    }
 
     @FXML
     void processBtnAction(ActionEvent event) {
@@ -143,10 +158,13 @@ public class BruteTabController {
             output.set(check);
         else{
             output.set(engine.decodeMsgBT(inputTF.getText().toUpperCase()));
+
             isInputGiven.set(true);
+            updateCurrConfig();
         }
-
-
+    }
+    private void updateCurrConfig(){
+        currConfig.set(engine.getCurrMachineSpecs().format());
     }
 
     @FXML
@@ -158,12 +176,35 @@ public class BruteTabController {
     }
 
     @FXML
-    void startBtnAction(ActionEvent event) {
+    void startBtnAction(ActionEvent event) throws IOException, ClassNotFoundException {
+        if(isPaused.get()) {
+            businessLogic.resume();
+            isPaused.set(false);
+        }
+        else {
+            inProgress.set(true);
+            cleanData();
+            UIAdapter uiAdapter = createUIAdapter();
+            //toggles?
+            businessLogic.bruteForce(difficultyCB.getValue(), output.get(), sizeSpinner.getValue(), (int) agentSlider.getValue(), uiAdapter,
+                    () -> {
+                        inProgress.set(false);
+                    });
+        }
 
     }
 
     @FXML
     void stopBtnAction(ActionEvent event) {
+        businessLogic.stop();
+        isPaused.set(false);
+        inProgress.set(false);
+    }
+
+    @FXML
+    void pauseBtnAction(ActionEvent event) {
+        businessLogic.pause();
+        isPaused.set(true);
 
     }
 
@@ -173,6 +214,10 @@ public class BruteTabController {
 
     public void setMainController(MainWindowController mainController) {
         this.mainController = mainController;
+    }
+
+    public void setBusinessLogic(BusinessLogic businessLogic) {
+        this.businessLogic = businessLogic;
     }
 
     private String checkInput(String input){
@@ -188,5 +233,69 @@ public class BruteTabController {
         }
         else
             return check;
+    }
+    public void bindTaskToUIComponents(Task<Boolean> aTask, Runnable onFinish){
+        taskProgressBar.progressProperty().bind(aTask.progressProperty());
+
+        progressLbl.textProperty().bind(
+                Bindings.concat(
+                        Bindings.format(
+                                "%.0f",
+                                Bindings.multiply(
+                                        aTask.progressProperty(),
+                                        100)),
+                        " %"));
+
+        aTask.valueProperty().addListener((observable, oldValue, newValue) -> {
+            onTaskFinished(Optional.ofNullable(onFinish));
+        });
+
+    }
+
+    private void onTaskFinished(Optional<Runnable> onFinish) {
+        this.taskProgressBar.progressProperty().unbind();
+        this.progressLbl.textProperty().unbind();
+        averageTime.set(engine.getDecipher().getBfDictionary().getAverageTime());
+        onFinish.ifPresent(Runnable::run);
+    }
+
+    private UIAdapter createUIAdapter(){
+        return new UIAdapter(
+                agentResult -> {
+                    createTile(agentResult.getAgentName(), agentResult.getResults());
+                },
+                agentResult -> {
+                    AgentResultsController controller = agentControllers.get(agentResult.getAgentName());
+                    if(controller != null)
+                        controller.addResults(agentResult.getResults());
+                }
+        );
+    }
+
+    private void createTile(String agentName, List<String> results){
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/mainWindow/tabs/bruteTab/subComp/agentResults/agentResults.fxml"));// replace with constant
+            Node agentTile = loader.load();
+            AgentResultsController controller = loader.getController();
+            controller.setAgentName(agentName);
+            controller.addResults(results);
+            resultsFP.getChildren().add(agentTile);
+            agentControllers.put(agentName, controller);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setCurrConfig(SimpleStringProperty currConfig) {
+        this.currConfig = currConfig;
+        currConfigLbl.textProperty().bind(currConfig);
+    }
+
+    public void cleanData(){
+        agentControllers = new HashMap<>();
+        resultsFP.getChildren().clear();
+        averageTime.set(0);
     }
 }

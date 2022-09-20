@@ -23,4 +23,11 @@ public class Msg{
         return String.format("<%s> --> <%s> %d ns", input, output, time);
     }
 
+    public void updateMessage(String input, String output, long time){
+        this.input = this.input + input;
+        this.output = this.output + output;
+        this.time+=time;
+
+    }
+
 }

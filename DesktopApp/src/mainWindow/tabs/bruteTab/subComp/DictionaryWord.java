@@ -32,7 +32,7 @@ public class DictionaryWord {
         final Text wordLabel = new Text(word);
         wordLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
-        wordNode.getChildren().addAll(wordBackground, wordLabel);
+        wordNode.getChildren().addAll(wordLabel);
 
         return wordNode;
     }

@@ -21,7 +21,11 @@
                   <Insets left="5.0" right="5.0" />
                </padding>
             </HBox>
-            <FlowPane fx:id="wordsFP" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+               <content>
+                  <FlowPane fx:id="wordsFP" hgap="25.0" prefHeight="200.0" prefWidth="200.0" vgap="5.0" />
+               </content>
+            </ScrollPane>
          </children>
       </VBox>
    </content>

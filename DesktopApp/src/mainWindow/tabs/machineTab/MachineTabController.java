@@ -16,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import machine.Reflector;
 import mainWindow.MainWindowController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +110,7 @@ public class MachineTabController {
         totalRotors.set(engine.getRotorsTotal());
         reflectors.set(engine.getReflectorsTotal());
         messages.set(engine.getMessagesCount());
+        mainController.setMessages(messages);
     }
 
     public void setReflectorCB() {
@@ -133,14 +135,15 @@ public class MachineTabController {
     }
 
     @FXML
-    void randomCodeAction() {
+    void randomCodeAction() throws IOException, ClassNotFoundException {
         engine.randMachineSpecs();
         setInitialConfig();
         setCurrConfig();
+        mainController.setInitialCodeSet();
     }
 
     @FXML
-    void setCodeAction() {
+    void setCodeAction() throws IOException, ClassNotFoundException {
         String msg;
         msg = engine.pickRotors(rotorTF.getText());
         if(msg == null) {
@@ -152,6 +155,7 @@ public class MachineTabController {
                     engine.applyChanges();
                     setInitialConfig();
                     setCurrConfig();
+                    mainController.setInitialCodeSet();
                     error.set("");
                     return;
                 }
@@ -160,25 +164,21 @@ public class MachineTabController {
         error.set(msg);
     }
 
-    private void setInitialConfig(){
+    private void setInitialConfig() throws IOException, ClassNotFoundException {
         configInit.set(engine.getInitialMachineSpecs().format());
+        engine.writeMachineToString();
     }
 
     private void setCurrConfig(){
         configCurr.set(engine.getCurrMachineSpecs().format());
-        mainController.setCurrConfig(configCurr.getValue());
+        mainController.setCurrConfig(configCurr);
         mainController.setNewConfig();
     }
 
 
-    public SimpleIntegerProperty messagesProperty() {
-        return messages;
-    }
-
-    public SimpleStringProperty currConfigProperty(){return this.configCurr;}
-
-    public void updateCurrConfig(String currConfig){
-        configCurr.set(currConfig);
+    public void resetConfigurations(){
+        configCurr.set("");
+        configInit.set("");
     }
 
 }

@@ -2,7 +2,10 @@ package mainWindow.tabs.encryptTab;
 
 import engine.Engine;
 import engine.Msg;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -64,6 +67,10 @@ public class EncryptTabController {
 
     private SimpleStringProperty output;
 
+    private SimpleBooleanProperty seqInput;
+
+    private SimpleIntegerProperty messages;
+
     private final ToggleGroup inputMode;
 
     private Engine engine;
@@ -79,6 +86,7 @@ public class EncryptTabController {
     public EncryptTabController() {
         currConfig = new SimpleStringProperty();
         output = new SimpleStringProperty("");
+        seqInput = new SimpleBooleanProperty(true);
         inputMode = new ToggleGroup();
         keys = new ArrayList<>();
     }
@@ -91,39 +99,61 @@ public class EncryptTabController {
         disRB.setToggleGroup(inputMode);
         setupTreeTableView();
         statsTT.setShowRoot(false);
+        processBtn.disableProperty().bind(seqInput.not());
+        doneBtn.disableProperty().bind(seqInput);
+
+        inputMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if(inputMode.getSelectedToggle() == seqRB) {
+                seqInput.set(true);
+                if(output.get() != ""){
+                    clearBtnAction();
+                }
+            }
+            else{
+                seqInput.set(false);
+                clearBtnAction();
+            }
+        });
     }
 
     @FXML
-    void clearBtnAction(ActionEvent event) {
+    void clearBtnAction() {
         output.set("");
         inputTF.clear();
+        engine.discreteMsgDone();
     }
 
     @FXML
     void doneBtnAction(ActionEvent event) {
-        
-
-
+        updateStats();
+        engine.discreteMsgDone();
+        inputTF.clear();
+        output.set("");
     }
 
     @FXML
     void processBtnAction(ActionEvent event) {
         String output = engine.decodeMsg(inputTF.getText().toUpperCase());
         this.output.set(output);
-        updateCurrConfig();
-        updateStats();
+        if(engine.checkAbc(inputTF.getText().toUpperCase()) == null) {
+            updateCurrConfig();
+            updateStats();
+            messages.set(engine.getMessagesCount());
+        }
         //MORE STUFF
 
     }
     private void updateCurrConfig(){
         currConfig.set(engine.getCurrMachineSpecs().format());
-        mainController.updateCurrConfig(currConfig.getValue());
     }
 
     @FXML
     void resetBtnAction(ActionEvent event) {
         engine.resetRotors();
         updateCurrConfig();
+        engine.discreteMsgDone();
+        inputTF.clear();
+        output.set("");
     }
 
     @FXML
@@ -146,6 +176,17 @@ public class EncryptTabController {
         }
     }
 
+    @FXML
+    void singleKeyAction(KeyEvent event) {
+        if(disRB.isSelected()){
+            String key = event.getCharacter();
+            if(engine.getABC().contains(key.toUpperCase())) {
+                output.set(output.get() + engine.decodeChar(key.toUpperCase().charAt(0)));
+                updateCurrConfig();
+            }
+        }
+    }
+
     public void setNewConfig() {
         newConfig = true;
     }
@@ -160,8 +201,9 @@ public class EncryptTabController {
 
     public SimpleStringProperty currConfigProperty(){return this.currConfig;}
 
-    public void setCurrConfig(String currConfig){
-        this.currConfig.set(currConfig);
+    public void setCurrConfig(SimpleStringProperty currConfig){
+        this.currConfig = currConfig;
+        currConfigLabel.textProperty().bind(currConfig);
     }
 
     public void setup(){
@@ -206,8 +248,12 @@ public class EncryptTabController {
         }
         currRoot.getChildren().add(new TreeItem<>(engine.getLastMsg()));
         root.setExpanded(true);
-
     }
+
+    public void setMessages(SimpleIntegerProperty messages){
+        this.messages =messages;
+    }
+
 
 
 }

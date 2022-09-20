@@ -1,6 +1,8 @@
 package mainWindow;
 
 import engine.Engine;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,6 +15,7 @@ import javafx.stage.Stage;
 import mainWindow.tabs.machineTab.MachineTabController;
 import mainWindow.tabs.bruteTab.BruteTabController;
 import mainWindow.tabs.encryptTab.EncryptTabController;
+import mainWindow.tasks.BusinessLogic;
 
 import java.io.File;
 
@@ -58,6 +61,8 @@ public class MainWindowController {
 
     private SimpleStringProperty fileErrorProperty;
 
+    private SimpleBooleanProperty initialCodeSet;
+
     private Stage primaryStage;
 
     private Engine engine;
@@ -65,6 +70,7 @@ public class MainWindowController {
     public MainWindowController() {
         fileNameProperty = new SimpleStringProperty();
         fileErrorProperty = new SimpleStringProperty();
+        initialCodeSet = new SimpleBooleanProperty(false);
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -75,10 +81,14 @@ public class MainWindowController {
     private void initialize(){
         fileName.textProperty().bind(fileNameProperty);
         fileError.textProperty().bind(fileErrorProperty);
+        encryptTab.disableProperty().bind(initialCodeSet.not());
+        bruteTab.disableProperty().bind(initialCodeSet.not());
         if(machineTabCompController != null && encryptTabCompController != null && bruteTabCompController != null){
             machineTabCompController.setMainController(this);
             encryptTabCompController.setMainController(this);
             bruteTabCompController.setMainController(this);
+            BusinessLogic businessLogic = new BusinessLogic(bruteTabCompController);
+            bruteTabCompController.setBusinessLogic(businessLogic);
         }
     }
 
@@ -100,6 +110,8 @@ public class MainWindowController {
             encryptTabCompController.setup();
             bruteTabCompController.setup();
             machineTabCompController.setFileLoaded(true);
+            machineTabCompController.resetConfigurations();
+            initialCodeSet.set(false);
         }catch (Exception e){
             fileErrorProperty.set(e.getMessage());
         }
@@ -115,14 +127,18 @@ public class MainWindowController {
         bruteTabCompController.setEngine(engine);
     }
 
-    public void setCurrConfig(String currConfig){
+    public void setCurrConfig(SimpleStringProperty currConfig){
         encryptTabCompController.setCurrConfig(currConfig);
+        bruteTabCompController.setCurrConfig(currConfig);
     }
 
     public void setNewConfig(){encryptTabCompController.setNewConfig();}
 
-    public void updateCurrConfig(String currConfig){
-        machineTabCompController.updateCurrConfig(currConfig);
+    public void setMessages(SimpleIntegerProperty messages){
+        encryptTabCompController.setMessages(messages);
     }
 
+    public void setInitialCodeSet() {
+        this.initialCodeSet.set(true);
+    }
 }
