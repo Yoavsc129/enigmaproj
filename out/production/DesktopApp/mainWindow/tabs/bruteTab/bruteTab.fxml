@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1039.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainWindow.tabs.bruteTab.BruteTabController">
+   <content>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0" styleClass="v-box">
+         <children>
+            <ScrollPane fitToHeight="true" fitToWidth="true">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="1029.0" spacing="5.0">
+                           <children>
+                              <GridPane HBox.hgrow="ALWAYS">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="151.0" minWidth="10.0" prefWidth="105.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="207.0" minWidth="10.0" prefWidth="207.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="354.0" minWidth="10.0" prefWidth="354.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="178.0" minWidth="10.0" prefWidth="12.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Current Configuration" />
+                                    <Label fx:id="currConfigLbl" GridPane.columnIndex="1" GridPane.columnSpan="2" />
+                                    <Label text="Input" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                    <TextField fx:id="inputTF" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                                    <Label text="Output" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                    <Label fx:id="outputLbl" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                                 </children>
+                              </GridPane>
+                              <Button mnemonicParsing="false" onAction="#processBtnAction" text="Process" />
+                              <Button mnemonicParsing="false" onAction="#resetBtnAction" text="Reset" />
+                              <Button mnemonicParsing="false" onAction="#dictionaryBtnAction" text="Dictionary" />
+                           </children>
+                           <padding>
+                              <Insets right="5.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane fitToHeight="true" fitToWidth="true">
+               <content>
+                  <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                     <children>
+                        <GridPane fx:id="dmOpBoard" prefHeight="180.0" prefWidth="1029.0">
+                          <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="DM Operational" GridPane.columnIndex="3" />
+                              <Label text="Difficulty" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                              <Label text="Mission Size" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                              <Slider fx:id="agentSlider" min="2.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <ComboBox fx:id="difficultyCB" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Button fx:id="startBtn" mnemonicParsing="false" onAction="#startBtnAction" text="Start / Resume" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Button fx:id="pauseBtn" mnemonicParsing="false" onAction="#pauseBtnAction" text="Pause" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                              <Button fx:id="stopBtn" mnemonicParsing="false" onAction="#stopBtnAction" text="Stop" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                              <Label fx:id="agentsCountLbl" text="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                                 <padding>
+                                    <Insets right="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label text="Agents Count" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                              <Spinner fx:id="sizeSpinner" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="118.0" prefWidth="1033.0">
+               <content>
+                  <AnchorPane prefHeight="101.0" prefWidth="1033.0">
+                     <children>
+                        <VBox prefHeight="116.0" prefWidth="1026.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="50.0" prefHeight="40.0" prefWidth="1031.0" spacing="5.0">
+                                 <children>
+                                    <Label text="Progress" />
+                                    <Label fx:id="progressLbl" text="0%" />
+                                    <ProgressBar fx:id="taskProgressBar" prefHeight="18.0" prefWidth="746.0" progress="0.0" HBox.hgrow="ALWAYS" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="20.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="63.0" prefWidth="1033.0" spacing="5.0">
+                                 <children>
+                                    <Label text="Average time per task:" />
+                                    <Label fx:id="averageTimeLbl" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane fitToWidth="true" pannable="true" prefViewportHeight="240.0" prefViewportWidth="600.0" VBox.vgrow="ALWAYS">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <FlowPane fx:id="resultsFP" hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="308.0" prefWidth="1027.0" prefWrapLength="100.0" vgap="5.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+   </content>
+</ScrollPane>
