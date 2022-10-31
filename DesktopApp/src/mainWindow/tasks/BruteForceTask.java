@@ -2,7 +2,7 @@ package mainWindow.tasks;
 
 import engine.bruteForce.BFDictionary;
 import engine.bruteForce.Decipher;
-import javafx.concurrent.Task;
+
 import machine.Machine;
 import mainWindow.tabs.bruteTab.subComp.agentResults.AgentResult;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.locks.Lock;
+
 
 public class BruteForceTask implements Runnable{
 

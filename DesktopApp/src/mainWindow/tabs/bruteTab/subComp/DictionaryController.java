@@ -4,7 +4,6 @@ import engine.Engine;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
+
 
 public class DictionaryController {
 
@@ -22,7 +21,7 @@ public class DictionaryController {
     @FXML
     private FlowPane wordsFP;
 
-    private Map<String, DictionaryWord> words;
+    private final Map<String, DictionaryWord> words;
 
     Engine engine;
 
@@ -49,7 +48,7 @@ public class DictionaryController {
         for(String word: suggestions)
             nodes.add(words.get(word).getWordNode());
 
-        Predicate<Node> nodePredicate = (node) -> nodes.contains(node);
+
         wordsFP.getChildren().setAll(nodes);
     }
 

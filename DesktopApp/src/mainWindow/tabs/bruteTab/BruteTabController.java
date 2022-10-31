@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -152,7 +151,7 @@ public class BruteTabController {
 
 
     @FXML
-    void processBtnAction(ActionEvent event) {
+    void processBtnAction() {
         String check = checkInput(inputTF.getText().toUpperCase());
         if(check != null)
             output.set(check);
@@ -168,7 +167,7 @@ public class BruteTabController {
     }
 
     @FXML
-    void resetBtnAction(ActionEvent event) {
+    void resetBtnAction() {
         engine.resetRotors();
         output.set("");
         isInputGiven.set(false);
@@ -176,7 +175,7 @@ public class BruteTabController {
     }
 
     @FXML
-    void startBtnAction(ActionEvent event) throws IOException, ClassNotFoundException {
+    void startBtnAction() throws IOException, ClassNotFoundException {
         if(isPaused.get()) {
             businessLogic.resume();
             isPaused.set(false);
@@ -187,22 +186,20 @@ public class BruteTabController {
             UIAdapter uiAdapter = createUIAdapter();
             //toggles?
             businessLogic.bruteForce(difficultyCB.getValue(), output.get(), sizeSpinner.getValue(), (int) agentSlider.getValue(), uiAdapter,
-                    () -> {
-                        inProgress.set(false);
-                    });
+                    () -> inProgress.set(false));
         }
 
     }
 
     @FXML
-    void stopBtnAction(ActionEvent event) {
+    void stopBtnAction() {
         businessLogic.stop();
         isPaused.set(false);
         inProgress.set(false);
     }
 
     @FXML
-    void pauseBtnAction(ActionEvent event) {
+    void pauseBtnAction() {
         businessLogic.pause();
         isPaused.set(true);
 
@@ -246,9 +243,7 @@ public class BruteTabController {
                                         100)),
                         " %"));
 
-        aTask.valueProperty().addListener((observable, oldValue, newValue) -> {
-            onTaskFinished(Optional.ofNullable(onFinish));
-        });
+        aTask.valueProperty().addListener((observable, oldValue, newValue) -> onTaskFinished(Optional.ofNullable(onFinish)));
 
     }
 
@@ -261,9 +256,7 @@ public class BruteTabController {
 
     private UIAdapter createUIAdapter(){
         return new UIAdapter(
-                agentResult -> {
-                    createTile(agentResult.getAgentName(), agentResult.getResults());
-                },
+                agentResult -> createTile(agentResult.getAgentName(), agentResult.getResults()),
                 agentResult -> {
                     AgentResultsController controller = agentControllers.get(agentResult.getAgentName());
                     if(controller != null)

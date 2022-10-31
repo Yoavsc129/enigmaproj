@@ -5,12 +5,10 @@ import engine.Msg;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
@@ -20,7 +18,7 @@ import mainWindow.tabs.encryptTab.subComp.Key;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 
 public class EncryptTabController {
@@ -105,7 +103,7 @@ public class EncryptTabController {
         inputMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if(inputMode.getSelectedToggle() == seqRB) {
                 seqInput.set(true);
-                if(output.get() != ""){
+                if(!Objects.equals(output.get(), "")){
                     clearBtnAction();
                 }
             }
@@ -124,7 +122,7 @@ public class EncryptTabController {
     }
 
     @FXML
-    void doneBtnAction(ActionEvent event) {
+    void doneBtnAction() {
         updateStats();
         engine.discreteMsgDone();
         inputTF.clear();
@@ -132,7 +130,7 @@ public class EncryptTabController {
     }
 
     @FXML
-    void processBtnAction(ActionEvent event) {
+    void processBtnAction() {
         String output = engine.decodeMsg(inputTF.getText().toUpperCase());
         this.output.set(output);
         if(engine.checkAbc(inputTF.getText().toUpperCase()) == null) {
@@ -148,7 +146,7 @@ public class EncryptTabController {
     }
 
     @FXML
-    void resetBtnAction(ActionEvent event) {
+    void resetBtnAction() {
         engine.resetRotors();
         updateCurrConfig();
         engine.discreteMsgDone();
@@ -199,7 +197,7 @@ public class EncryptTabController {
         this.engine = engine;
     }
 
-    public SimpleStringProperty currConfigProperty(){return this.currConfig;}
+
 
     public void setCurrConfig(SimpleStringProperty currConfig){
         this.currConfig = currConfig;
@@ -207,13 +205,6 @@ public class EncryptTabController {
     }
 
     public void setup(){
-        /*String abc = engine.getABC();
-        for (int i = 0; i < abc.length(); i++) {
-
-            Key key = new Key(KeyCode.getKeyCode(abc.substring(i, i + 1)));
-            keys.add(key);
-            keysPane.getChildren().add(key.createNode());
-        }*/
         root = new TreeItem<>(new Msg("", "", 0));
         currRoot = new TreeItem<>(new Msg("", "", 0));
         statsTT.setRoot(root);

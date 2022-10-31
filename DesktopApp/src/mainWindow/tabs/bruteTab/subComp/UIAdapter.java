@@ -2,7 +2,7 @@ package mainWindow.tabs.bruteTab.subComp;
 
 import javafx.application.Platform;
 import mainWindow.tabs.bruteTab.subComp.agentResults.AgentResult;
-import mainWindow.tabs.bruteTab.subComp.agentResults.AgentResultsController;
+
 
 import java.util.function.Consumer;
 
@@ -17,13 +17,13 @@ public class UIAdapter {
 
     public void addNewAgent(AgentResult newAgent){
         Platform.runLater(
-                () -> {addNewAgentResult.accept(newAgent);}
+                () -> addNewAgentResult.accept(newAgent)
         );
     }
 
     public void updateAgent(AgentResult agent){
         Platform.runLater(
-                () -> {updateExistingAgent.accept(agent);}
+                () -> updateExistingAgent.accept(agent)
         );
     }
 }

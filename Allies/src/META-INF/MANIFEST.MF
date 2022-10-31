@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: client.main.AlliesClient
+Class-Path: lib/engine.jar lib/ClientUtil.jar
+

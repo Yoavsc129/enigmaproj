@@ -11,8 +11,6 @@ import java.util.concurrent.BlockingQueue;
 
 public class GetResultsTask extends Task<Boolean> {
 
-    private final long SLEEP_TIME = 10;
-
     private BlockingQueue resultQueue;
 
     private long missionCount;
@@ -41,13 +39,12 @@ public class GetResultsTask extends Task<Boolean> {
 
 
     @Override
-    protected Boolean call() throws Exception {
+    protected Boolean call(){
         updateProgress(0, missionCount);
-        final int[] missionDone = {1};
         AgentResult result;
         AgentResult existing;
 
-        do{ //&& producer is done
+        do{
             try {
                 if(dictionary.isPause())
                     lock.paused();
@@ -58,6 +55,7 @@ public class GetResultsTask extends Task<Boolean> {
                 result = (AgentResult) resultQueue.poll();
 
                 updateProgress(dictionary.getTasksDone(), missionCount);
+                long SLEEP_TIME = 10;
                 Utils.sleepForAWhile(SLEEP_TIME);
                 if (result != null) {
                     existing = results.get(result.getAgentName());

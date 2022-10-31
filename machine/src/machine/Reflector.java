@@ -12,9 +12,6 @@ public class Reflector implements Serializable {
 
     public enum ReflectorID {
         I, II, III, IV, V
-
-
-
     }
     private final ReflectorID ID;
     private final int[] reflection;

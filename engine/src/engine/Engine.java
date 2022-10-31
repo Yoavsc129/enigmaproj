@@ -1,5 +1,9 @@
 package engine;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import engine.bruteForce.Decipher;
 import engine.bruteForce.Difficulty;
 import engine.exception.*;
@@ -12,14 +16,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class Engine {
 
     private final static String JAXB_PACKAGE_NAME = "machine.generated";
 
-    public static final String SAVED_ENIGMA_FILE_NAME = "savedEnigma.dat";
-    private InputStream inputStream;
+    private final static int AGENT_COUNT = 20;
+    private transient InputStream inputStream;
 
     private Machine enigma;
 
@@ -57,6 +62,32 @@ public class Engine {
 
     private boolean newDisMsg = true;
 
+    private int alliesReq;
+
+    private List<Integer> pickedRotors;
+
+    private int pickedReflector;
+
+    public Engine() {
+        pickedRotors = new ArrayList<>();
+    }
+
+    public List<Integer> getPickedRotors() {
+        return pickedRotors;
+    }
+
+    public int getPickedReflector() {
+        return pickedReflector;
+    }
+
+    public int getAlliesReq() {
+        return alliesReq;
+    }
+
+    public void setAlliesReq(int alliesReq) {
+        this.alliesReq = alliesReq;
+    }
+
     private void openNewFile(String fileName) throws FileNotFoundException {
         InputStream temp;
         try {
@@ -66,18 +97,17 @@ public class Engine {
         }
         inputStream = temp;
     }
-    private void createXMLEnigma() throws RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException, AgentCountOutOfRangeException {
+    public void createXMLEnigma(CTEEnigma cteEnigma) throws RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException, AgentCountOutOfRangeException {
         try {
-            CTEEnigma cteEnigma = deserializeForm(inputStream);
             CTEMachine cteMachine = cteEnigma.getCTEMachine();
             CTEDecipher cteDecipher = cteEnigma.getCTEDecipher();
-            if(cteDecipher.getAgents() < 2 || cteDecipher.getAgents() > 50)
-                throw new AgentCountOutOfRangeException(cteDecipher.getAgents());
+            /*if(cteDecipher.getAgents() < 2 || cteDecipher.getAgents() > 50)
+                throw new AgentCountOutOfRangeException(cteDecipher.getAgents());*/
             checkCTEnigma(cteMachine);
             enigma = new Machine(cteMachine.getRotorsCount(), cteMachine.getABC().trim(),
                     cteMachine.getCTERotors().getCTERotor(),
                     cteMachine.getCTEReflectors().getCTEReflector());
-            decipher = new Decipher(cteDecipher.getAgents(), cteDecipher.getCTEDictionary().getWords(),
+            decipher = new Decipher(AGENT_COUNT, cteDecipher.getCTEDictionary().getWords(),
                     cteDecipher.getCTEDictionary().getExcludeChars());
             machineLoaded = true;
             stats = new ArrayList<>();
@@ -85,17 +115,14 @@ public class Engine {
             messagesCount = 0;
             details = new MachineDetails(enigma.getRotorsCount(), enigma.getRotorsTotal(),
                     enigma.getReflectorsTotal(), messagesCount);
-
-        } catch (JAXBException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e){
+        }catch (Exception e){
             throw e;
         }
 
     }
 
 
-    private static CTEEnigma deserializeForm(InputStream in) throws JAXBException {
+    public static CTEEnigma deserializeForm(InputStream in) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         return (CTEEnigma) u.unmarshal(in);
@@ -179,11 +206,16 @@ public class Engine {
     public void createMachineFromFile(String fileName) throws FileNotFoundException, RotorCountTooLowException, ABCNotEvenException, NotUniqueIdException, DoubleMappingException, NotchOutOfRangeException, NotEnoughRotorsException, RotorIdOutOfScopeException, BadReflectorIdException, NotUniqueRefIdException, BadReflectException, AgentCountOutOfRangeException {
         try{
             openNewFile(fileName);
-            createXMLEnigma();
-        } catch(Exception e){
+            CTEEnigma cteEnigma = deserializeForm(inputStream);
+            createXMLEnigma(cteEnigma);
+        }catch(JAXBException e){
+            throw new RuntimeException();
+        }catch(Exception e){
             throw e;
         }
     }
+
+
 
     public int getReflectorsTotal(){return enigma.getReflectorsTotal();}
 
@@ -226,6 +258,7 @@ public class Engine {
         }
         Collections.reverse(ids);
         enigma.pickTempRotors(ids);
+        pickedRotors = ids;
         return null;
     }
     public String pickInitialRotorsPos(String pos){
@@ -235,11 +268,16 @@ public class Engine {
         for(Character c : pos.toCharArray())
             if(!abc.contains(c.toString()))
                 return String.format("The character %c is not part of the ABC.", c);
-
-        enigma.setInitialTempRotorsPosition(pos);
+        char[] letters = pos.toCharArray();
+        String reversedPos = "";
+        for (int i = pos.length() - 1; i >= 0; i--) {
+            reversedPos = reversedPos + letters[i];
+        }
+        enigma.setInitialTempRotorsPosition(reversedPos);
         return null;
     }
     public void pickReflector(int ID){
+        pickedReflector = ID;
         enigma.pickTempReflector(Reflector.ReflectorID.values()[ID].name());
     }
 
@@ -301,9 +339,10 @@ public class Engine {
         Collections.shuffle(abcIndexes);
         for (int i = 0; i < plugsCount; i++)
             plugs.append(ABC.charAt(abcIndexes.get(i)));
-
-        enigma.pickTempRotors(rotorIds.subList(0,enigma.getRotorsCount()));
+        pickedRotors = rotorIds.subList(0,enigma.getRotorsCount());
+        enigma.pickTempRotors(pickedRotors);
         enigma.setInitialTempRotorsPosition(pos.toString());
+        pickedReflector = reflectorID;
         pickReflector(reflectorID);
         pickPlugs(plugs.toString());
         applyChanges();
@@ -321,6 +360,16 @@ public class Engine {
         out.writeObject(enigma);
         out.close();
         decipher.setSavedEnigma(Base64.getEncoder().encodeToString(bytes.toByteArray()));
+    }
+
+    public void readMachineFromString(String machine){
+        try {
+            enigma = Decipher.readMachineFromString(machine);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -437,5 +486,16 @@ public class Engine {
 
     public void discreteMsgDone(){
         newDisMsg = true;
+    }
+
+    private static class EngineDeserializer implements JsonDeserializer<Engine>{
+        @Override
+        public Engine deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            return null;
+        }
+    }
+
+    public Machine getEnigma() {
+        return enigma;
     }
 }

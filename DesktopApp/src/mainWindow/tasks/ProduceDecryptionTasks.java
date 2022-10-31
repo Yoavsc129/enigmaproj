@@ -15,7 +15,6 @@ import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 public class ProduceDecryptionTasks extends Task<Boolean> {
 
@@ -44,8 +43,6 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
 
     private CustomThreadPoolExecutor threadPool;
 
-    private boolean isPaused;
-
     private MyLock lock;
 
     public ProduceDecryptionTasks(String savedEnigma, BlockingQueue blockingQueue, BlockingQueue resultQueue, Difficulty difficulty, String userInput, int missionScope, BFDictionary dictionary, int agentsCount, long totalTasks, MyLock lock) throws IOException, ClassNotFoundException {
@@ -64,7 +61,6 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
         posPermutation = posPermutation % missionScope == 0? posPermutation / missionScope: posPermutation / missionScope + 1;
         this.totalTasks = totalTasks;
         this.lock = lock;
-        //missionCount = totalTasks % missionScope == 0? totalTasks / missionScope: totalTasks / missionScope + 1;
     }
 
     public void writeMachineToString() throws IOException{
@@ -77,7 +73,6 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
 
     @Override
     protected Boolean call(){
-        System.out.println("Let's ROCK!");
         threadPool = new CustomThreadPoolExecutor(agentsCount, agentsCount, 5, TimeUnit.SECONDS, blockingQueue);
         threadPool.prestartAllCoreThreads();
         try {
@@ -98,7 +93,7 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
         }catch(TaskIsCanceledException e){
             threadPool.shutdownNow();
         }catch(Exception e){
-            System.out.println(e.getMessage()); // something nicer
+            System.out.println(e.getMessage());
         }
         boolean finish = false;
         while(!finish){
@@ -119,7 +114,6 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
     }
 
     private void createTasksEasy(){
-        boolean flag = true;
         long start = 0;
         long end = missionScope - 1;
         for (int i = 0; i < posPermutation; i++) {
@@ -129,7 +123,6 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
             if(dictionary.isPause()){
                lock.paused();
             }
-            flag = true;
             try {
                 blockingQueue.put(new BruteForceTask(userInput, savedEnigma, dictionary, start, end, resultQueue));
             } catch (IOException e) {
@@ -150,7 +143,7 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
 
     }
 
-    private void createTasksMedium() throws IOException, ClassNotFoundException {
+    private void createTasksMedium() throws IOException{
         for (int i = 0; i < enigma.getReflectorsTotal(); i++) {
             if(isCancelled()){
                 throw new TaskIsCanceledException();
@@ -164,7 +157,7 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
         }
     }
 
-    private void createTasksHard() throws IOException, ClassNotFoundException {
+    private void createTasksHard() throws IOException{
         Integer[] arr = new Integer[enigma.getRotorsCount()];
         int i = 0;
         for(Rotor r : enigma.getUsedRotors()) {
@@ -194,7 +187,7 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
 
     }
 
-    private void createTasksHardest() throws IOException, ClassNotFoundException {
+    private void createTasksHardest() throws IOException{
         Integer[] arr = new Integer[enigma.getRotorsTotal()];
         for (int i = 0; i < enigma.getRotorsTotal(); i++) {
             arr[i] = i + 1;
@@ -233,7 +226,7 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
         arr[j] = temp;
     }
 
-    public void findAllSubsetsSizeR(Integer arr[], int n, int r, int index, Integer data[], int i, List<List<Integer>> result){
+    public void findAllSubsetsSizeR(Integer[] arr, int n, int r, int index, Integer[] data, int i, List<List<Integer>> result){
         if(index == r) {
             result.add(new ArrayList<>(Arrays.asList(data)));
             return;
@@ -246,15 +239,14 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
 
     }
 
-    public List<List<Integer>> findAllSubsetsSizeRShell(Integer arr[], int n, int r){
+    public List<List<Integer>> findAllSubsetsSizeRShell(Integer[] arr, int n, int r){
         List<List<Integer>> result = new ArrayList<>();
-        Integer data[] = new Integer[r];
+        Integer[] data = new Integer[r];
         findAllSubsetsSizeR(arr, n, r, 0, data, 0, result);
         return result;
     }
 
     public void pause(){
-        boolean flag = true;
         synchronized (lock){
             try{
                 threadPool.pause();
@@ -266,13 +258,5 @@ public class ProduceDecryptionTasks extends Task<Boolean> {
 
             }
         }
-        /*threadPool.pause();
-        while(flag){
-            if(!dictionary.isPause()){
-                notify();
-                flag = false;
-                threadPool.resume();
-            }
-        }*/
     }
 }

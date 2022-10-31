@@ -13,23 +13,9 @@ public class Decipher {
 
     private int agentsCount;
 
-
     private BFDictionary bfDictionary;
 
     private String savedEnigma;
-
-    private Machine enigma;
-
-    private String userInput;
-
-    private int missionScope = 1;
-
-
-
-
-
-
-
 
 
     public Decipher(int agentsCount, String dictionary, String excludedChars) {
@@ -57,9 +43,8 @@ public class Decipher {
         return word;
     }
 
-    public void setSavedEnigma(String savedEnigma) throws IOException, ClassNotFoundException {
+    public void setSavedEnigma(String savedEnigma){
         this.savedEnigma = savedEnigma;
-        enigma = readMachineFromString(savedEnigma);
     }
 
     public static Machine readMachineFromString(String savedEnigma) throws IOException, ClassNotFoundException {
@@ -71,13 +56,9 @@ public class Decipher {
         return res;
     }
 
-    public void setMissionScope(int missionScope) {
-        this.missionScope = missionScope;
-    }
 
-    public void setUserInput(String userInput) {
-        this.userInput = userInput;
-    }
+
+
 
     public boolean inDictionary(String word){
         word = bfDictionary.removeExcludedChars(word);

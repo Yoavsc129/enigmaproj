@@ -6,8 +6,6 @@ import java.util.List;
 public class Stats {
     private final String specs;
 
-
-
     private final List<Msg> messages;
 
     public Stats(String specs) {

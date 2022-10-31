@@ -12,9 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
+
 
 public class BusinessLogic {
 
@@ -76,7 +74,6 @@ public class BusinessLogic {
     }
 
     private void calculateTotalTasks(Difficulty difficulty, int missionScope) throws IOException, ClassNotFoundException {
-        long res = 0;
         Machine enigma = decipher.readMachineFromString(decipher.getSavedEnigma());
 
         totalTasks = (long)Math.pow(enigma.getABC().length(), enigma.getRotorsCount());
@@ -94,7 +91,7 @@ public class BusinessLogic {
     }
 
     public static long factorial(int number) {
-        long result = 1;
+        int result = 1;
 
         for (int factor = 2; factor <= number; factor++) {
             result *= factor;
@@ -103,7 +100,7 @@ public class BusinessLogic {
         return result;
     }
 
-    static long binomi(int n, int k) {
+    public static int binomi(int n, int k) {
         if ((n == k) || (k == 0))
             return 1;
         else

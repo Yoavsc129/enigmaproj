@@ -33,5 +33,6 @@
 
 .label-error{
     -fx-text-fill: red;
+    -fx-font-weight: BOLD;
 }
 

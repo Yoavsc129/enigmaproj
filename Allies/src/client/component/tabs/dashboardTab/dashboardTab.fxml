@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.tabs.dashboardTab.DashboardTabController">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+            <VBox layoutX="98.0" layoutY="99.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+               <children>
+                  <AnchorPane fx:id="switchPanel" prefHeight="253.0" prefWidth="294.0" VBox.vgrow="ALWAYS" />
+                  <TextArea fx:id="statusTA" editable="false" prefHeight="200.0" prefWidth="294.0" />
+               </children>
+            </VBox>
+         </children></AnchorPane>
+    <AnchorPane fx:id="contestListPanel" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+             <fx:include fx:id="contestListComp" source="../../tabs/dashboardTab/subComp/contestList/contestList.fxml" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
+         </children></AnchorPane>
+  </items>
+</SplitPane>

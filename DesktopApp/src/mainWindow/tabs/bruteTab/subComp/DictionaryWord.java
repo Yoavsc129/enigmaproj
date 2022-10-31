@@ -1,6 +1,6 @@
 package mainWindow.tabs.bruteTab.subComp;
 
-import javafx.beans.binding.Bindings;
+
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -11,9 +11,9 @@ import javafx.scene.text.Text;
 
 public class DictionaryWord {
 
-    private String word;
+    private final String word;
 
-    private Node wordNode;
+    private final Node wordNode;
 
     public DictionaryWord(String word) {
         this.word = word;

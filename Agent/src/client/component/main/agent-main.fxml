@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.main.AgentMainController">
+   <center>
+      <ScrollPane fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
+         <content>
+            <VBox minHeight="370.0" minWidth="570.0" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <AnchorPane fx:id="switchPanel" prefHeight="159.0" prefWidth="598.0" />
+                  <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <items>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                           <children>
+                              <fx:include fx:id="progressPanel" source="../progressPanel/progressPanel.fxml" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
+                           </children>
+                        </AnchorPane>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                           <children>
+                              <fx:include fx:id="candidatesTable" source="../candidatesTable/candidatestable.fxml" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
+                           </children>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </center>
+   <top>
+      <Label fx:id="agentLbl" text="Agent - Joe" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+   </top>
+</BorderPane>

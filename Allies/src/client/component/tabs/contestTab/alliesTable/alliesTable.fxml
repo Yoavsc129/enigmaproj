@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.tabs.contestTab.alliesTable.AlliesTableController">
+   <children>
+      <Label text="Allies">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TableView fx:id="alliesTV" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="nameTC" prefWidth="75.0" text="Name" />
+          <TableColumn fx:id="agentCountTC" prefWidth="75.0" text="Agent Count" />
+            <TableColumn fx:id="missionSizeTC" prefWidth="75.0" text="Mission Size" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </children>
+</VBox>

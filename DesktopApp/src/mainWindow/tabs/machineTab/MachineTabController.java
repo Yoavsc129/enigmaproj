@@ -85,6 +85,8 @@ public class MachineTabController {
 
     private Engine engine;
 
+
+
     public MachineTabController() {
         usedRotors = new SimpleIntegerProperty(0);
         totalRotors = new SimpleIntegerProperty(0);
