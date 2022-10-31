@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Agent/Agent.iml" filepath="$PROJECT_DIR$/Agent/Agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Allies/Allies.iml" filepath="$PROJECT_DIR$/Allies/Allies.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ClientUtil/ClientUtil.iml" filepath="$PROJECT_DIR$/ClientUtil/ClientUtil.iml" />
       <module fileurl="file://$PROJECT_DIR$/DesktopApp/DesktopApp.iml" filepath="$PROJECT_DIR$/DesktopApp/DesktopApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml" />
-      <module fileurl="file://$PROJECT_DIR$/enigmaproj.iml" filepath="$PROJECT_DIR$/enigmaproj.iml" />
-      <module fileurl="file://$PROJECT_DIR$/machine/machine.iml" filepath="$PROJECT_DIR$/machine/machine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/engine/Engine.iml" filepath="$PROJECT_DIR$/engine/Engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/machine/Machine.iml" filepath="$PROJECT_DIR$/machine/Machine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UBoat/UBoat.iml" filepath="$PROJECT_DIR$/UBoat/UBoat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/enigmaWeb/enigmaWeb.iml" filepath="$PROJECT_DIR$/enigmaWeb/enigmaWeb.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui/ui.iml" filepath="$PROJECT_DIR$/ui/ui.iml" />
     </modules>
   </component>

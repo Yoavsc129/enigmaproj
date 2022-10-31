@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: uBoat.client.main.UBoatClient
+Class-Path: lib/engine.jar lib/ClientUtil.jar
+

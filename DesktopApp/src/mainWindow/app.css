@@ -1,0 +1,38 @@
+.button{
+    -fx-text-fill: ORANGE;
+    -fx-background-color: rgb(128, 0, 128);
+    -fx-font-weight: BOLD;
+}
+#main-background{
+    -fx-background-color: rgba(128, 0, 128, 0.61);
+}
+
+#app-title{
+    -fx-background-color: red;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+}
+
+#main-scrollpane{
+    -fx-background-color: rgba(128, 0, 128, 0.61);
+}
+
+
+.scroll-pane{
+    -fx-background-color: orange;
+}
+
+.tab-pane{
+    -fx-background-color: orange;
+}
+
+.label{
+    -fx-text-fill: blue;
+    -fx-stroke: white;
+}
+
+.label-error{
+    -fx-text-fill: red;
+    -fx-font-weight: BOLD;
+}
+

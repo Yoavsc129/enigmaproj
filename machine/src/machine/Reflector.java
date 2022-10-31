@@ -2,18 +2,16 @@ package machine;
 
 import machine.generated.CTEReflect;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Reflector {
+public class Reflector implements Serializable {
     public ReflectorID getID() {
         return ID;
     }
 
     public enum ReflectorID {
         I, II, III, IV, V
-
-
-
     }
     private final ReflectorID ID;
     private final int[] reflection;

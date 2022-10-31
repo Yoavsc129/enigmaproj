@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="539.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.tabs.dashboardTab.subComp.agentsTable.AgentsTableController">
+   <center>
+      <TableView fx:id="agentsTV" prefHeight="373.0" prefWidth="609.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn prefWidth="221.0" sortable="false" text="Name" />
+          <TableColumn minWidth="0.0" prefWidth="158.0" text="Thread Count" />
+            <TableColumn prefWidth="158.0" text="Mission Count" />
+        </columns>
+      </TableView>
+   </center>
+   <top>
+      <Label text="Agents" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+   </top>
+</BorderPane>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane id="main-background" maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="844.0" prefWidth="1038.0" stylesheets="@app.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainWindow.MainWindowController">
+   <top>
+      <Label id="app-title" text="Enigma" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="40.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="66.0" prefWidth="1035.0" spacing="10.0">
+               <children>
+                  <Button fx:id="loadFileBtn" mnemonicParsing="false" onAction="#loadFileAction" styleClass="button-text" text="Load File" />
+                  <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="fileName" />
+                        <Label fx:id="fileError" styleClass="label-error" />
+                     </children>
+                  </VBox>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <Separator prefWidth="1035.0" />
+            <ScrollPane id="main-scrollpane" VBox.vgrow="ALWAYS">
+               <content>
+                  <TabPane id="main-tabs" prefHeight="717.0" prefWidth="1036.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab fx:id="machineTab" text="Machine">
+                           <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <fx:include fx:id="machineTabComp" source="tabs/machineTab/machineTab.fxml" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                      </Tab>
+                      <Tab fx:id="encryptTab" text="Encrypt/Decrypt">
+                        <content>
+                          <AnchorPane id="encrypt-pane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                     <fx:include fx:id="encryptTabComp" source="tabs/encryptTab/encryptTab.fxml" />
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                        <Tab fx:id="bruteTab" text="Brute Force">
+                          <content>
+                            <AnchorPane disable="true" minHeight="0.0" minWidth="0.0">
+                                 <children>
+                                     <fx:include fx:id="bruteTabComp" source="tabs/bruteTab/bruteTab.fxml" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+               </content>
+            </ScrollPane>
+         </children>
+         <BorderPane.margin>
+            <Insets left="2.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+</BorderPane>

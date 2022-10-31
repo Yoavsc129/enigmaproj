@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: client.main.AgentClient
+Class-Path: lib/engine.jar lib/ClientUtil.jar
+

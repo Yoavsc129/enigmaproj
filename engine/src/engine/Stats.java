@@ -6,8 +6,6 @@ import java.util.List;
 public class Stats {
     private final String specs;
 
-
-
     private final List<Msg> messages;
 
     public Stats(String specs) {
@@ -27,8 +25,21 @@ public class Stats {
         return res.toString();
     }
 
+    public Msg getLastMsg(){
+        return messages.get(messages.size() - 1);
+    }
+
 
     public String getSpecs() {
         return specs;
+    }
+
+    public void updateLastMsg(String input, String output, long time){
+        Msg res = getLastMsg();
+        res.updateMessage(input, output, time);
+    }
+
+    public void discardLastMsg() {
+        messages.remove(messages.size() - 1);
     }
 }

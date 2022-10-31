@@ -1,0 +1,28 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="enigmaApp">
+    <output-path>$PROJECT_DIR$/out/artifacts/enigmaApp</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <exploded>true</exploded>
+        <module>enigmaWeb</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="enigmaWeb" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="artifact" artifact-name="engine:jar" />
+          <element id="artifact" artifact-name="machine:jar" />
+          <element id="library" level="project" name="gson-2.8.8" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/enigmaWeb/target/enigmaWeb-1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="enigmaWeb/web/Web" />
+    </root>
+  </artifact>
+</component>
